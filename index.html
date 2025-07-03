@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .task-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .task-form:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: transparent;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .task-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .task-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .task-item.completed {
+            opacity: 0.7;
+            background: #f8f9fa;
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+
+        .task-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .task-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .task-item {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .task-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Task Manager</h1>
+        
+        <div class="task-form">
+            <h2>Створити нову задачу</h2>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="title">Назва задачі:</label>
+                    <input type="text" id="title" name="title" required placeholder="Введіть назву задачі...">
+                </div>
+                <div class="form-group">
+                    <label for="description">Опис:</label>
+                    <textarea id="description" name="description" placeholder="Введіть опис задачі..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Створити задачу</button>
+                <button type="button" class="btn btn-secondary" id="cancelEdit" style="display: none;">Скасувати</button>
+            </form>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">Усі задачі</button>
+            <button class="filter-btn" data-filter="active">Активні</button>
+            <button class="filter-btn" data-filter="completed">Завершені</button>
+        </div>
+
+        <div id="taskList" class="task-list">
+            <div class="loading">Завантаження задач...</div>
+        </div>
+    </div>
+
+    <script>
+        class TaskManager {
+            constructor() {
+                this.tasks = [];
+                this.currentFilter = 'all';
+                this.editingTaskId = null;
+                this.apiUrl = 'http://localhost:3000/tasks';
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.loadTasks();
+            }
+
+            bindEvents() {
+                document.getElementById('taskForm').addEventListener('submit', (e) => this.handleSubmit(e));
+                document.getElementById('cancelEdit').addEventListener('click', () => this.cancelEdit());
+                
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.setFilter(e.target.dataset.filter));
+                });
+            }
+
+            async loadTasks() {
+                try {
+                    const response = await fetch(this.apiUrl);
+                    if (!response.ok) throw new Error('Не вдалося завантажити задачі');
+                    this.tasks = await response.json();
+                    this.renderTasks();
+                } catch (error) {
+                    console.error('Помилка завантаження:', error);
+                    document.getElementById('taskList').innerHTML = `
+                        <div class="empty-state">
+                            <h3>⚠️ Помилка завантаження</h3>
+                            <p>Переконайтесь, що json-server запущений на порту 3000</p>
+                            <button class="btn btn-primary" onclick="location.reload()">Спробувати знову</button>
+                        </div>
+                    `;
+                }
+            }
+
+            async handleSubmit(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const task = {
+                    title: formData.get('title').trim(),
+                    description: formData.get('description').trim(),
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
+
+                if (!task.title) return;
+
+                try {
+                    if (this.editingTaskId) {
+                        await this.updateTask(this.editingTaskId, task);
+                    } else {
+                        await this.createTask(task);
+                    }
+                    this.resetForm();
+                    this.loadTasks();
+                } catch (error) {
+                    console.error('Помилка збереження:', error);
+                    alert('Помилка при збереженні задачі');
+                }
+            }
+
+            async createTask(task) {
+                const response = await fetch(this.apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(task)
+                });
+                if (!response.ok) throw new Error('Не вдалося створити задачу');
+            }
+
+            async updateTask(id, task) {
+                const response = await fetch(`${this.apiUrl}/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...task, id })
+                });
+                if (!response.ok) throw new Error('Не вдалося оновити задачу');
+            }
+
+            async deleteTask(id) {
+                if (!confirm('Ви впевнені, що хочете видалити цю задачу?')) return;
+                
+                try {
+                    const response = await fetch(`${this.apiUrl}/${id}`, {
+                        method: 'DELETE'
+                    });
+                    if (!response.ok) throw new Error('Не вдалося видалити задачу');
+                    this.loadTasks();
+                } catch (error) {
+                    console.error('Помилка видалення:', error);
+                    alert('Помилка при видаленні задачі');
+                }
+            }
+
+            async toggleTask(id) {
+                const task = this.tasks.find(t => t.id === id);
+                if (!task) return;
+
+                try {
+                    await this.updateTask(id, { ...task, completed: !task.completed });
+                    this.loadTasks();
+                } catch (error) {
+                    console.error('Помилка оновлення:', error);
+                    alert('Помилка при оновленні задачі');
+                }
+            }
+
+            editTask(id) {
+                const task = this.tasks.find(t => t.id === id);
+                if (!task) return;
+
+                this.editingTaskId = id;
+                document.getElementById('title').value = task.title;
+                document.getElementById('description').value = task.description;
+                document.querySelector('.btn-primary').textContent = 'Оновити задачу';
+                document.getElementById('cancelEdit').style.display = 'inline-block';
+                document.getElementById('title').focus();
+            }
+
+            cancelEdit() {
+                this.editingTaskId = null;
+                this.resetForm();
+            }
+
+            resetForm() {
+                document.getElementById('taskForm').reset();
+                document.querySelector('.btn-primary').textContent = 'Створити задачу';
+                document.getElementById('cancelEdit').style.display = 'none';
+                this.editingTaskId = null;
+            }
+
+            setFilter(filter) {
+                this.currentFilter = filter;
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+                this.renderTasks();
+            }
+
+            getFilteredTasks() {
+                switch (this.currentFilter) {
+                    case 'active':
+                        return this.tasks.filter(task => !task.completed);
+                    case 'completed':
+                        return this.tasks.filter(task => task.completed);
+                    default:
+                        return this.tasks;
+                }
+            }
+
+            renderTasks() {
+                const taskList = document.getElementById('taskList');
+                const filteredTasks = this.getFilteredTasks();
+
+                if (filteredTasks.length === 0) {
+                    taskList.innerHTML = `
+                        <div class="empty-state">
+                            <h3>📝 Немає задач</h3>
+                            <p>${this.getEmptyMessage()}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                taskList.innerHTML = filteredTasks.map(task => `
+                    <div class="task-item ${task.completed ? 'completed' : ''}">
+                        <div class="task-title">${this.escapeHtml(task.title)}</div>
+                        <div class="task-description">${this.escapeHtml(task.description)}</div>
+                        <div class="task-actions">
+                            <button class="btn-small btn-success" onclick="taskManager.toggleTask(${task.id})">
+                                ${task.completed ? '↩️ Позначити активною' : '✅ Завершити'}
+                            </button>
+                            <button class="btn-small btn-warning" onclick="taskManager.editTask(${task.id})">
+                                ✏️ Редагувати
+                            </button>
+                            <button class="btn-small btn-danger" onclick="taskManager.deleteTask(${task.id})">
+                                🗑️ Видалити
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            getEmptyMessage() {
+                switch (this.currentFilter) {
+                    case 'active':
+                        return 'Усі задачі завершені! 🎉';
+                    case 'completed':
+                        return 'Немає завершених задач';
+                    default:
+                        return 'Створіть свою першу задачу';
+                }
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+
+        const taskManager = new TaskManager();
+    </script>
+</body>
+</html>

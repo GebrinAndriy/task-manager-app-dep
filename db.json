@@ -1,0 +1,11 @@
+{
+  "tasks": [
+    {
+      "title": "Прибирання",
+      "description": "Треба прибрати",
+      "completed": true,
+      "createdAt": "2025-07-03T13:25:52.271Z",
+      "id": 1
+    }
+  ]
+}
